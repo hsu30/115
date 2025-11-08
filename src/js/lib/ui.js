@@ -3,8 +3,8 @@ import Store from './store'
 
 class UI {
   constructor () {
-    this.version = '0.5.1'
-    this.updateDate = '2022/10/02'
+    this.version = chrome.runtime.getManifest().version
+    this.updateDate = '2025/11/08'
     Store.on('updateView', (configData) => {
       this.updateSetting(configData)
       this.updateMenu(configData)
@@ -256,6 +256,7 @@ class UI {
               <div class="setting-menu-item">
                 <label class="setting-menu-label">&copy; Copyright</label>
                 <a class="setting-menu-link" href="https://github.com/acgotaku/115" target="_blank">雪月秋水</a>
+                <label class="setting-menu-label">(Modified by hsu30)</label>
               </div>
               <div class="setting-menu-item">
                 <label class="setting-menu-label">Version: ${this.version}</label>
@@ -270,15 +271,35 @@ class UI {
         </div>
       </div>`
     document.body.insertAdjacentHTML('beforeend', setting)
+
     const settingMenu = document.querySelector('#settingMenu')
-    const close = settingMenu.querySelector('.modal-close')
-    close.addEventListener('click', () => {
-      settingMenu.classList.remove('open-o')
+    this.elements = {
+      settingMenu: settingMenu,
+      close: settingMenu.querySelector('.modal-close'),
+      message: settingMenu.querySelector('#message'),
+      addRPC: settingMenu.querySelector('#addRPC'),
+      apply: settingMenu.querySelector('#apply'),
+      reset: settingMenu.querySelector('#reset'),
+      testAria2: settingMenu.querySelector('#testAria2'),
+      configSync: settingMenu.querySelector('.configSync-s'),
+      sha1Check: settingMenu.querySelector('.sha1Check-s'),
+      vip: settingMenu.querySelector('.vip-s'),
+      small: settingMenu.querySelector('.small-s'),
+      interval: settingMenu.querySelector('.interval-s'),
+      downloadPath: settingMenu.querySelector('.downloadPath-s'),
+      userAgent: settingMenu.querySelector('.userAgent-s'),
+      browserUserAgent: settingMenu.querySelector('.browser-userAgent-s'),
+      referer: settingMenu.querySelector('.referer-s'),
+      headers: settingMenu.querySelector('.headers-s')
+    }
+
+    this.elements.close.addEventListener('click', () => {
+      this.elements.settingMenu.classList.remove('open-o')
       this.resetSetting()
     })
-    const addRPC = document.querySelector('#addRPC')
-    addRPC.addEventListener('click', () => {
-      const rpcDOMList = document.querySelectorAll('.rpc-s')
+
+    this.elements.addRPC.addEventListener('click', () => {
+      const rpcDOMList = this.elements.settingMenu.querySelectorAll('.rpc-s')
       const RPC = `
         <div class="setting-menu-row rpc-s">
           <div class="setting-menu-name">
@@ -290,48 +311,41 @@ class UI {
         </div><!-- /.setting-menu-row -->`
       Array.from(rpcDOMList).pop().insertAdjacentHTML('afterend', RPC)
     })
-    const apply = document.querySelector('#apply')
-    const message = document.querySelector('#message')
-    apply.addEventListener('click', () => {
+
+    this.elements.apply.addEventListener('click', () => {
       this.saveSetting()
-      message.innerText = '设置已保存'
+      this.elements.message.innerText = '设置已保存'
     })
 
-    const reset = document.querySelector('#reset')
-    reset.addEventListener('click', () => {
+    this.elements.reset.addEventListener('click', () => {
       Store.trigger('clearConfigData')
-      message.innerText = '设置已重置'
+      this.elements.message.innerText = '设置已重置'
     })
 
-    const testAria2 = document.querySelector('#testAria2')
-    testAria2.addEventListener('click', () => {
-      Core.getVersion(Store.getConfigData('rpcList')[0].url, testAria2)
+    this.elements.testAria2.addEventListener('click', () => {
+      Core.getVersion(Store.getConfigData('rpcList')[0].url, this.elements.testAria2)
     })
 
-    const userAgentField = document.querySelector('.userAgent-s')
-    const browserUACheckbox = document.querySelector('.browser-userAgent-s')
-    browserUACheckbox.addEventListener('change', () => {
-      userAgentField.disabled = browserUACheckbox.checked
+    this.elements.browserUserAgent.addEventListener('change', () => {
+      this.elements.userAgent.disabled = this.elements.browserUserAgent.checked
     })
   }
 
   resetSetting () {
-    const message = document.querySelector('#message')
-    message.innerText = ''
-    const testAria2 = document.querySelector('#testAria2')
-    testAria2.innerText = '测试连接，成功显示版本号'
+    this.elements.message.innerText = ''
+    this.elements.testAria2.innerText = '测试连接，成功显示版本号'
   }
 
   updateSetting (configData) {
     const { rpcList, configSync, sha1Check, vip, small, interval, downloadPath, userAgent, browserUserAgent, referer, headers } = configData
     // reset dom
-    document.querySelectorAll('.rpc-s').forEach((rpc, index) => {
+    this.elements.settingMenu.querySelectorAll('.rpc-s').forEach((rpc, index) => {
       if (index !== 0) {
         rpc.remove()
       }
     })
     rpcList.forEach((rpc, index) => {
-      const rpcDOMList = document.querySelectorAll('.rpc-s')
+      const rpcDOMList = this.elements.settingMenu.querySelectorAll('.rpc-s')
       if (index === 0) {
         rpcDOMList[index].querySelector('.name-s').value = rpc.name
         rpcDOMList[index].querySelector('.url-s').value = rpc.url
@@ -348,23 +362,23 @@ class UI {
         Array.from(rpcDOMList).pop().insertAdjacentHTML('afterend', RPC)
       }
     })
-    document.querySelector('.configSync-s').checked = configSync
-    document.querySelector('.sha1Check-s').checked = sha1Check
-    document.querySelector('.vip-s').checked = vip
-    document.querySelector('.small-s').checked = small
-    document.querySelector('.interval-s').value = interval
-    document.querySelector('.downloadPath-s').value = downloadPath
-    document.querySelector('.userAgent-s').value = userAgent
-    document.querySelector('.userAgent-s').disabled = browserUserAgent
-    document.querySelector('.browser-userAgent-s').checked = browserUserAgent
-    document.querySelector('.referer-s').value = referer
-    document.querySelector('.headers-s').value = headers
+    this.elements.configSync.checked = configSync
+    this.elements.sha1Check.checked = sha1Check
+    this.elements.vip.checked = vip
+    this.elements.small.checked = small
+    this.elements.interval.value = interval
+    this.elements.downloadPath.value = downloadPath
+    this.elements.userAgent.value = userAgent
+    this.elements.userAgent.disabled = browserUserAgent
+    this.elements.browserUserAgent.checked = browserUserAgent
+    this.elements.referer.value = referer
+    this.elements.headers.value = headers
 
     this.mostRecentConfigData = configData
   }
 
   saveSetting () {
-    const rpcDOMList = document.querySelectorAll('.rpc-s')
+    const rpcDOMList = this.elements.settingMenu.querySelectorAll('.rpc-s')
     const rpcList = Array.from(rpcDOMList).map((rpc) => {
       const name = rpc.querySelector('.name-s').value
       const url = rpc.querySelector('.url-s').value
@@ -374,16 +388,16 @@ class UI {
         return null
       }
     }).filter(el => el)
-    const configSync = document.querySelector('.configSync-s').checked
-    const sha1Check = document.querySelector('.sha1Check-s').checked
-    const vip = document.querySelector('.vip-s').checked
-    const small = document.querySelector('.small-s').checked
-    const interval = document.querySelector('.interval-s').value
-    const downloadPath = document.querySelector('.downloadPath-s').value
-    const userAgent = document.querySelector('.userAgent-s').value
-    const browserUserAgent = document.querySelector('.browser-userAgent-s').checked
-    const referer = document.querySelector('.referer-s').value
-    const headers = document.querySelector('.headers-s').value
+    const configSync = this.elements.configSync.checked
+    const sha1Check = this.elements.sha1Check.checked
+    const vip = this.elements.vip.checked
+    const small = this.elements.small.checked
+    const interval = this.elements.interval.value
+    const downloadPath = this.elements.downloadPath.value
+    const userAgent = this.elements.userAgent.value
+    const browserUserAgent = this.elements.browserUserAgent.checked
+    const referer = this.elements.referer.value
+    const headers = this.elements.headers.value
 
     const configData = {
       rpcList,

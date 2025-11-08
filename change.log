@@ -1,0 +1,24 @@
+# Change Log
+
+## [Unreleased]
+
+### Added
+- N/A
+
+### Changed
+- **(Optimization)** Refactored the settings UI (`ui.js`) to cache DOM elements, significantly reducing redundant queries and improving responsiveness.
+- **(Optimization)** Optimized the configuration save logic (`store.js`) to use a single `chrome.storage.set` operation instead of multiple, improving performance.
+- **(Refactor)** Modified the settings UI (`ui.js`) to dynamically display the extension's version from the manifest (`chrome.runtime.getManifest().version`) rather than a hardcoded value.
+
+### Deprecated
+- N/A
+
+### Removed
+- **(Refactor)** Removed dead code from the service worker (`background.js`) that improperly used `localStorage`.
+
+### Fixed
+- **(MV3 Fix)** Updated `manifest.json` to include `<all_urls>` in `host_permissions`, fixing the inability to connect to user-defined Aria2 RPC servers under Manifest V3 rules.
+- **(Bug Fix)** Corrected a bug in `store.js` that caused synced configuration data from `chrome.storage.sync` to be saved incorrectly to local storage.
+
+### Security
+- N/A

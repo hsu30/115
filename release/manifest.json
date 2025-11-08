@@ -27,7 +27,8 @@
   }],
   "manifest_version": 3,
   "permissions": ["cookies", "storage", "notifications", "scripting"],
-  "host_permissions": ["*://*.115.com/*"],
+  "host_permissions": ["*://*.115.com/*", "<all_urls>"],
   "name": "__MSG_appName__",
-  "version": "0.5.1"
+  "version": "0.5.1.1",
+  "version_name": "0.5.1 Fork 1"
 }

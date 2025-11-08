@@ -28,11 +28,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse(false)
       })
       return true
-    case 'configData':
-      for (const key in request.data) {
-        localStorage.setItem(key, request.data[key])
-      }
-      break
+
     case 'rpcVersion':
       httpSend(request.data, (data) => {
         sendResponse(data.result.version)

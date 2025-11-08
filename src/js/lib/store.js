@@ -28,7 +28,7 @@ class Store extends EventEmitter {
   init () {
     chrome.storage.sync.get(null, (items) => {
       for (const key in items) {
-        chrome.storage.local.set({ key: items[key] }, () => {
+        chrome.storage.local.set({ [key]: items[key] }, () => {
           console.log('chrome first local set: %s, %s', key, items[key])
         })
       }
@@ -54,15 +54,13 @@ class Store extends EventEmitter {
   }
 
   save (configData) {
-    for (const key in configData) {
-      chrome.storage.local.set({ [key]: configData[key] }, () => {
-        console.log('chrome local set: %s, %s', key, configData[key])
+    chrome.storage.local.set(configData, () => {
+      console.log('chrome local set', configData)
+    })
+    if (configData.configSync === true) {
+      chrome.storage.sync.set(configData, () => {
+        console.log('chrome sync set', configData)
       })
-      if (configData.configSync === true) {
-        chrome.storage.sync.set({ [key]: configData[key] }, () => {
-          console.log('chrome sync set: %s, %s', key, configData[key])
-        })
-      }
     }
   }
 
